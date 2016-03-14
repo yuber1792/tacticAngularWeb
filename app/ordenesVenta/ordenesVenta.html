@@ -33,7 +33,7 @@
                     </md-input-container>-->
 
                  <!--  autocompletar de  tipo servicio-->
-                      <md-autocomplete
+                   <!--   <md-autocomplete
                           md-selected-item="app.selectedItem"
                           md-search-text="app.searchText.nombre"
                           md-items="app in tipoServicioData | filter:app.searchText.nombre"           md-item-text="app.nombre"                          
@@ -47,11 +47,11 @@
                           {{ app.nombre }}
                         </span>
                       </md-item-template>
-                    </md-autocomplete>
+                    </md-autocomplete>-->
              
 
 
-      <!-- Combo de  cliente -->
+                <!-- Combo de  cliente -->
              <!-- <md-input-container class="md-block" flex-gt-sm>
                         <label>Cliente</label>
                            <md-select ng-model="jsonFacturacion.cliente" ng-change="cargaSegmentos()">
@@ -66,7 +66,7 @@
                       <md-autocomplete
                           md-selected-item="cli.selectedItem"
                           md-search-text="cli.searchText.nombre"
-                          md-items="cli in clientes | filter:cli.searchText.nombre"           md-item-text="cli.nombre"                         
+                          md-items="cli in clientes | filter:cli.searchText.nombre"            md-item-text="cli.nombre"                         
                           placeholder="Seleccione cliente ..."                          
                           md-selected-item-change="cargaSegmentos(cli.id)"                   
                          >
@@ -153,25 +153,35 @@
                     <label>Numero documento que acompaña la orden</label>
                     <input ng-model="jsonFacturacion.numeroDocumento" >
                 </md-input-container>
+                <div ng-if="admiteBodegasDestino == 0">                                
+                    <!-- campo  nombre-->
+                     <md-input-container class="md-block" flex-gt-sm>
+                        <label>Nombre contacto</label>
+                        <input ng-model="jsonFacturacion.nombre" >
+                    </md-input-container>
+                     <!-- campo  telefonos-->
+                     <md-input-container class="md-block" flex-gt-sm>
+                        <label>Telefonos contacto</label>
+                        <input  ng-model="jsonFacturacion.telefonos">
+                    </md-input-container>                
+                     <!-- campo  email-->
+                     <md-input-container class="md-block" flex-gt-sm>
+                        <label>Email contacto</label>
+                        <input  ng-model="jsonFacturacion.email">
+                    </md-input-container>
+                </div>
+                <div ng-if="admiteBodegasDestino == 1">
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Bodega</label>
+                           <md-select ng-model="jsonProductoAdd.bodega">
+                             <md-option ng-repeat="td in bodegasProducto" value="{{td.id}}">
+                              {{td.codigo}}-{{td.nombre}}
+                            </md-option>
+                          </md-select>
+                    </md-input-container>
 
-                <!-- campo  nombre-->
-                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Nombre contacto</label>
-                    <input ng-model="jsonFacturacion.nombre" >
-                </md-input-container>
-                 <!-- campo  telefonos-->
-                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Telefonos contacto</label>
-                    <input  ng-model="jsonFacturacion.telefonos">
-                </md-input-container>
-                 
 
-                 <!-- campo  email-->
-                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Email contacto</label>
-                    <input  ng-model="jsonFacturacion.email">
-                </md-input-container>
-
+                </div>
                  <md-button md-no-ink class="md-raised md-primary" ng-click="validaTabFacturacion()">Continuar a datos envio</md-button>
 
 

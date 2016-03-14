@@ -16,6 +16,8 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
       $scope.login = Scopes.get('loginCtrl').login ; 
       $scope.jsonRespuesta = Scopes.get('loginCtrl').jsonRespuesta ; 
       $scope.login.id  = $scope.jsonRespuesta.usuario.id;
+      $scope.jsonListaOrdenes = Scopes.get('listaOrdenesCtrl').jsonListaOrdenes;
+      $scope.tipoServicioData  = Scopes.get('listaOrdenesCtrl').tipoServicioData;
       console.log("idUsuario =>" + $scope.login.id);
      $scope.volver = function (){
 
@@ -273,81 +275,7 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
       //$scope.dataTabs.tabProductos = true;      
     }
     
-    /****************************** metodos  para  el funcionamiento de  las datatables********************************/
 
-        var datatableConfig = {
-            "name":"simple_datatable",
-            "columns":[
-                {
-                    "header":"Producto",
-                    "property":"producto",
-                    "order":true,
-                    "type":"text"
-                },
-                 {
-                    "header":"Bodega",
-                    "property":"bodega",
-                    "order":true,
-                    "type":"text"
-                },
-                {
-                    "header":"Cantidad",
-                    "property":"cantidad",
-                    "order":true,
-                    "type":"text"
-                },
-                {
-                    "header":"Um",
-                    "property":"unidad",
-                    "order":true,
-                    "type":"text"
-                },
-                 {
-                    "header":"Lote",
-                    "property":"lote",
-                    "order":true,
-                    "type":"text"
-                },
-                 {
-                    "header":"Notas",
-                    "property":"notas",
-                    "order":true,
-                    "type":"text"
-                }
-            ],
-            "edit":{
-                "active":false,
-                "columnMode":true
-            },
-            "pagination":{
-                "mode":'local'
-            },
-            "order":{
-                "mode":'local'
-            },
-            "remove":{
-                "active":false,
-                "mode":'local'
-            },
-            "filter": {
-                active:true,//Active or not
-                highlight:false,
-                columnMode:true,
-                showButton:true //Show the filter and reset buttons if true
-            }
-        };
-
-        //Simple exemple of data
-        var datatableData = [
-                                {"producto":1, "bodega":54456744 , "cantidad" : 10  ,"unidad"  : "Bu" , "lote":"123423","notas" :"texto"},
-                                {"producto":2, "bodega":54 , "cantidad" : 1  ,"unidad"  : "Bu" , "lote":"134423","notas" :"texto"},                                
-                                {"producto":3, "bodega":546744 , "cantidad" : 20  ,"unidad"  : "Bu" , "lote":"123423","notas" :"texto"}
-                            ];
-       
-        //Init the datatable with his configuration
-        $scope.datatable = datatable(datatableConfig);
-        //Set the data to the datatable
-        $scope.datatable.setData(datatableData);
 
 
 
@@ -361,27 +289,49 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
      $scope.tipoServicioData = [];
      
     /*********************************Carga los tipos de sevicio por usaurio  ****************************************************/
-         $http.get('http://'+$scope.serverData.ip+':'+$scope.serverData.puerto+'/satelite/ordenes/tipos_servicio-x-usuario?id_usuario='+$scope.login.id)
-              .success(function(data, status, headers, config){
-                //alert("**** SUCCESS ****");
-               // alert(status);
+        
+        $scope.cargaTiposServicio= function(val){
 
-              })
-              .error(function(data, status, headers, config){
-                    console.log("error ===>");
-                console.log(status);
-                console.log(data);
-                console.log(headers);
-                console.log(config);
-            
-              })
-              .then(function(response){
+              $http.get('http://'+$scope.serverData.ip+':'+$scope.serverData.puerto+'/satelite/ordenes/tipos_servicio-x-usuario?id_usuario='+$scope.login.id)
+                    .success(function(data, status, headers, config){
+                      //alert("**** SUCCESS ****");
+                     // alert(status);
+
+                    })
+                    .error(function(data, status, headers, config){
+                          console.log("error ===>");
+                      console.log(status);
+                      console.log(data);
+                      console.log(headers);
+                      console.log(config);
+                  
+                    })
+                    .then(function(response){
+                     
+                     $scope.tipoServicioData = response.data;
+                    console.log("json cargado tipos de servicio por cliente ===>");
+                    console.log( $scope.tipoServicioData);
+                      for (var i = 0 ; i < $scope.tipoServicioData.length ; i++) {
                
-               $scope.tipoServicioData = response.data;
-              console.log("json cargado tipos de servicio por cliente ===>");
-              console.log( $scope.tipoServicioData);
+                        if(parseInt(val) === parseInt($scope.tipoServicioData[i].id)){
+                            console.log("entro a if" + $scope.tipoServicioData[i].nombre ) ; 
+                            console.log("Admite bodegas como destino = " + $scope.tipoServicioData[i].admiteBodegasComoDestino  );
+                            if($scope.tipoServicioData[i].admiteBodegasComoDestino)
+                            {
+                              $scope.admiteBodegasDestino  = 1 ; 
+                              console.log("es true");
+                            }else{
+                              $scope.admiteBodegasDestino  = 0 ; 
+                              console.log("es false");
+                            }
 
-         });    
+                        }
+
+                     }
+
+               });  
+
+      }   
 
     //******************************Clientes por  usuario  **********************************************************/
 
@@ -391,10 +341,11 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
                        {"id":"3", "codigo":"CPA" , "nombre":"CPA" , "numeroIdentificacion" : "232342"},
                     ];
       */
+      $scope.admiteBodegasDestino  = 0 ; 
       $scope.cargaClientes = function(val){
         
         $scope.jsonFacturacion.tipoServicio  = val
-        console.log("entra  = " + $scope.jsonFacturacion.tipoServicio);
+  
          $http.get('http://'+$scope.serverData.ip+':'+$scope.serverData.puerto+'/satelite/ordenes/clientes-x-usuario?id_usuario='+$scope.login.id+'&id_tipo_servicio='+$scope.jsonFacturacion.tipoServicio)
               .success(function(data, status, headers, config){
                 //alert("**** SUCCESS ****");
@@ -413,13 +364,15 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
               .then(function(response){
                
                $scope.clientes = response.data;
-               console.log("json cargado cliente ===> " );
+               console.log("json cargado cliente ===> "  );
                console.log($scope.clientes) ; 
+               $scope.cargaTiposServicio(val);
 
           });    
 
 
       }
+      $scope.cargaClientes($scope.jsonListaOrdenes.tipoServicio);
 
      
      /********************************Combo segmentos  ***************************************************************/
@@ -895,120 +848,9 @@ angular.module('myApp.ordenesVenta', ['ngRoute'])
 
       }
 
-        /**********************Autocompletar *********************************/
+    
 
-      $scope.autocompletarComboTipoServicio  = function  ($timeout, $q, $log ,$scope) {
-      var self = this;
-      self.simulateQuery = false;
-      self.isDisabled    = false;
-      // list of `state` value/display objects
-      self.states        = loadAll();
-      self.querySearch   = querySearch;
-      self.selectedItemChange = selectedItemChange;
-      self.searchTextChange   = searchTextChange;
-      self.newState = newState;
-      function newState(state) {
-       // alert("No se encontraton resultados para " + state + ".");
-      }
-      // ******************************
-      // Internal methods
-      // ******************************
-      /**
-       * Search for states... use $timeout to simulate
-       * remote dataservice call.
-       */
-      function querySearch (query) {
-        var results = query ? self.states.filter( createFilterFor(query) ) : self.states,
-            deferred;
-        if (self.simulateQuery) {
-          deferred = $q.defer();
-          $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
-          return deferred.promise;
-        } else {
-          return results;
-        }
-      }
-      function searchTextChange(text) {
-        $log.info('Text changed to ' + text);
-      }
-      function selectedItemChange(item) {
-        $log.info('Item changed to ' + JSON.stringify(item));
-      }
-      /**
-       * Build `states` list of key/value pairs
-       */
-   
-
-      function loadAll() {
-        /*$scope.allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware,\
-                Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana,\
-                Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana,\
-                Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina,\
-                North Dakota, Ohio, Oklahoma, Oregon, Pennsylvania, Rhode Island, South Carolina,\
-                South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia,\
-                Wisconsin, Wyoming';
-
-   return $scope.allStates.split(/, +/g).map( function (state) {
-          return {
-            value: state.toLowerCase(),
-            display: state
-          };
-
-
-         
-        });
-
-                */
-
-   $http.get('http://'+$scope.serverData.ip+':'+$scope.serverData.puerto+'/satelite/ordenes/tipos_servicio-x-usuario?id_usuario='+$scope.login.id)
-              .success(function(data, status, headers, config){
-                //alert("**** SUCCESS ****");
-               // alert(status);
-             
-
-              })
-              .error(function(data, status, headers, config){
-                //alert("**** Verificar conexion a internet ****");
-                    console.log("error ===>");
-                console.log(status);
-                console.log(data);
-                console.log(headers);
-                console.log(config);
-            
-              })
-              .then(function(response){
-               
-               $scope.tipoServicioData = response.data;
-              console.log("json cargado tipos de servicio por cliente ===>");
-              console.log( $scope.tipoServicioData);
-
-               
-         });           
-
-         return $scope.tipoServicioData.map(function(texto, id ){
-               
-                  return  {
-                    value: texto.codigo,
-                    display: texto.nombre 
-                    };
-
-          })          
-
-         
-        
- 
-       
-      }
-      /**
-       * Create filter function for a query string
-       */
-      function createFilterFor(query) {
-        var lowercaseQuery = angular.lowercase(query);
-        return function filterFn(state) {
-          return (state.value.indexOf(lowercaseQuery) === 0);
-        };
-      }
-  }
+      
   /************editar evento ********************/
       $scope.esEdicion =  0 ; 
       $scope.editarLinea = function(){

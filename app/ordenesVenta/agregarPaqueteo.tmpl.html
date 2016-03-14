@@ -9,9 +9,6 @@
     </md-toolbar>
     <md-dialog-content >
             <md-content class="md-padding">
-    
-        <h1>Paqueteo</h1>
-
              <!-- Combo de  Tipos de servicio -->
                     <md-input-container class="md-block" flex-gt-sm>
                         <label>Linea</label>
@@ -21,6 +18,8 @@
                             </md-option>
                           </md-select>
                     </md-input-container>
+                <fieldset class="standard" >
+                    <legend>Declaracion de contenido</legend>
              <!-- campo  numero de paquetes-->
                  <md-input-container class="md-block" flex-gt-sm>
                     <label>Numero de paquetes</label>
@@ -49,7 +48,7 @@
                     <fieldset class="standard" >
                       <legend>Medidas </legend>
                         <div layout="row">
-                             <md-input-container class="md-block" flex-gt-sm>
+                        <md-input-container class="md-block" flex-gt-sm>
                                 <label>Alto cm</label>
                                 <input type="number" ng-model="jsonPaqueteo.alto" >
                             </md-input-container>    
